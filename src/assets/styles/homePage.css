@@ -1,0 +1,95 @@
+.dashboard-header {
+    background: #364f7c;
+    color: white;
+    padding: 10px;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.025);
+   
+}
+
+.menu-icon {
+    cursor: pointer;
+    margin-left: 50px;
+    font-size: 24px;
+    color: #fff;
+}
+
+.menu {
+    width: 200px;
+    background: rgba(2, 171, 255, 0.752);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    transition: transform 0.3s ease;
+    transform: translateX(-100%);
+    position: fixed;
+    top: 60px;
+    bottom: 0;
+    left: 0;
+    padding-top: 10px;
+    z-index: 1;
+    box-shadow: 2px 0px 10px rgba(218, 212, 212, 0.495);
+   
+    overflow: hidden;
+}
+
+.menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu li {
+    padding: 10px;
+    border-bottom: 1px solid #666;
+    cursor: pointer;
+   
+    transition: background-color 0.3s ease;
+}
+
+.menu li:hover {
+    background-color:rgb(79, 142, 208);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.menu li.selected {
+    background-color: rgb(79, 142, 208);
+    color: #fff;
+}
+
+.menu.open {
+    transform: translateX(0);
+}
+
+.main-content {
+  
+    padding: 20px;
+    margin-top: 60px;
+    background-color: #fff;
+    border-radius: 30px;
+    border-width:1;
+    border-color: #000;
+}
+
+.DoctorLogout {
+    display: flex;
+    margin-left: auto;
+    margin-right: 50px;
+    padding-left: 10px;
+    align-items: center;
+    border-radius: 30px;
+}
+
+.DoctorLogout>div {
+    margin-left: 50px;
+}
+
+.IconsOnTopRightCorner {
+    padding-right: 10px;
+    font-size: 24px;
+    color: #fff;
+}
