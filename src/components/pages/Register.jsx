@@ -13,39 +13,68 @@ const Register = () => {
     const [msg, setMsg] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const register = (email, password) =>
-        supabase.auth.signUp({ email, password });
+    const register = (email, password) => supabase.auth.signUp({ email, password });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (
-            !passwordRef.current?.value ||
-            !emailRef.current?.value ||
-            !confirmPasswordRef.current?.value
-        ) {
-            setErrorMsg("Please fill all the fields");
+
+        // Validate email format
+        if (!validateEmail(emailRef.current.value)) {
+            setErrorMsg("Please enter a valid email address");
             return;
         }
+
+        // Ensure password strength
+        if (!validatePasswordStrength(passwordRef.current.value)) {
+            setErrorMsg("Password must be at least 6 characters long and include uppercase letters, lowercase letters, numbers, and special characters.");
+            return;
+        }
+
+        // Check for matching passwords
         if (passwordRef.current.value !== confirmPasswordRef.current.value) {
             setErrorMsg("Passwords don't match");
             return;
         }
+
         try {
             setErrorMsg("");
             setLoading(true);
-            const { data, error } = await register(
-                emailRef.current.value,
-                passwordRef.current.value
-            );
-            if (!error && data) {
-                setMsg(
-                    "Registration Successful. Check your email to confirm your account"
-                );
+            const { data, error } = await register(emailRef.current.value, passwordRef.current.value);
+            if (error) {
+                if (error.message.includes("rate limit exceeded")) {
+                    setErrorMsg("Email rate limit exceeded. Please try again later.");
+                } else {
+                    setErrorMsg(error.message); // Display the error message from Supabase
+                }
+            } else if (data) {
+                setMsg("Registration Successful. Check your email to confirm your account");
             }
         } catch (error) {
             setErrorMsg("Error in Creating Account");
+            console.error(error); // Log the error for debugging
         }
         setLoading(false);
+    };
+
+    const validateEmail = (email) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    };
+
+    const validatePasswordStrength = (password) => {
+        const minLength = 6;
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumbers = /\d/.test(password);
+        const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        return (
+            password.length >= minLength &&
+            hasUpperCase &&
+            hasLowerCase &&
+            hasNumbers &&
+            hasSpecialChars
+        );
     };
 
     return (
