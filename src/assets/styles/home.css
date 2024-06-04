@@ -18,13 +18,21 @@
     padding-bottom: 10px;
     border-radius: 5px;
     /* Adjust the height as needed */
+    flex-direction: row;
+    display: flex;
 }
 .patient-details-section {
-    display: flex;
+
     flex-direction: column;
+   
+    
     gap: 15px;
     margin-bottom: 20px;
     margin-top: 20px;
+    margin: 0 auto;
+        /* Center element horizontally */
+        width: fit-content;
+        /* Optional: Set width to fit content */
     
 }
 
@@ -63,6 +71,10 @@
     color: rgba(255, 0, 0, 0.435);
     margin-top: 1rem;
 }
+.diagnose{
+    margin-top: 1rem;
+    }
+
 
 .email-wrapper {
     display: flex;
@@ -119,9 +131,28 @@
     border-radius: 4px;
     cursor: pointer;
 }
-.app{
+.content{
    
     border-radius: 30px;
    
 }
+.heading{
+    font-weight: 700;
+    font-size: 30px;
+    text-align: center;
+    padding-bottom: 25px;
+}
+.titledash{
+    padding-top: 10px;
 
+}
+.diagnosePart{
+    margin: 0 auto;
+        /* Center element horizontally */
+        width: fit-content;
+        /* Optional: Set width to fit content */
+       
+}
+.patientLabel{
+   padding-top: 10px;
+}

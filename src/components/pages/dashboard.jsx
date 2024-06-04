@@ -8,7 +8,7 @@ import 'react-phone-input-2/lib/style.css';
 import '../../assets/styles/home.css';
 import * as tf from '@tensorflow/tfjs';
 import { v4 as uuidv4 } from 'uuid';
-
+import '../../assets/styles/patientReg.css';
 import { supabase } from "../../supabase/client";
 
 const Dashboard = () => {
@@ -209,11 +209,12 @@ const Dashboard = () => {
 };
 
     return (
-        <div className="app">
+        <div>
             <ToastContainer />
-            <h3 className='title'>Patient's Details</h3>
+           
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='form' >
+                <h1 className="formTitle">Patient's Details</h1>
                 <div className="patient-details-section">
                     <label>
                         Full Name:
@@ -227,7 +228,7 @@ const Dashboard = () => {
                             className="common-input-field"
                         />
                     </label>
-                    <label>
+                    <label className="patientLabel">
                         Age:
                         <input
                             type="number"
@@ -239,7 +240,7 @@ const Dashboard = () => {
                             className="common-input-field"
                         />
                     </label>
-                    <label>
+                    <label className="patientLabel">
                         Gender:
                         <select
                             name="gender"
@@ -254,7 +255,7 @@ const Dashboard = () => {
                             <option value="other">Other</option>
                         </select>
                     </label>
-                    <label>
+                    <label className="patientLabel">
                         Address:
                         <input
                             type="text"
@@ -266,7 +267,7 @@ const Dashboard = () => {
                             className="common-input-field"
                         />
                     </label>
-                    <label>
+                    <label className="patientLabel">
                         Telephone Number:
                         <PhoneInput
                             country={'ug'}
@@ -282,23 +283,39 @@ const Dashboard = () => {
                     </label>
                 </div>
 
-                <div className="file-upload-section">
-                    <label>
-                        <input type="file" name="file" className="hidden" onChange={handleFileUpload} />
+                <div className="mb-3 w-full" style={{paddingTop:'20px'}}>
+                    <label
+                        htmlFor="formFile"
+                        className="mb-2 inline-block text-neutral-700 dark:text-neutral-200"
+                    >
+                        Input Brain Scan
                     </label>
+                    <div className="flex items-center">
+                        <input
+                            className="relative flex-auto rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out overflow-hidden rounded-none border-0 border-solid border-inherit bg-neutral-100 px-3 text-neutral-700 transition duration-150 ease-in-out border-inline-end-width:1px margin-inline-end:0.75rem hover:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:bg-neutral-700 dark:text-neutral-100 dark:focus:border-primary"
+                            type="file"
+                            id="formFile"
+                            onChange={handleFileUpload}
+                        />
+                        {image && (
+                            <span className="cancel cursor-pointer ml-2" onClick={handleFileCancel}>
+                                X
+                            </span>
+                        )}
+                    </div>
                 </div>
-                <span className="file">{filename}</span>
-                {image && (
-                    <span className="cancel" onClick={handleFileCancel}>
-                        X
-                    </span>
-                )}
-                <div className='diagnose'>
-                    <button className="diagnose-button" type="button" onClick={handleDiagnose}>
+
+                <div className='diagnosePart'>
+                    <button className="middle none center mr-4 rounded-lg bg-blue-500 py-3 px-6 font-sans text-xs font-bold uppercase text-white shadow-md shadow-blue-500/20 
+                    transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] 
+                    focus:shadow-none active:opacity-[0.85] active:shadow-none 
+                    disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        data-ripple-light="true" type="button" onClick={handleDiagnose}>
                         Diagnose
                     </button>
                 </div>
             </form>
+
 
             {diagnosisResults && (
                 <div className="diagnosis-section">
