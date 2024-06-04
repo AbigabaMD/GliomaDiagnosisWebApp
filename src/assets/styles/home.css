@@ -1,127 +1,148 @@
-.content {
-    padding: 10px;
-    max-width: 600px;
-    margin: 0 auto;
+/* General page styling */
+body {
+    background-color: #f2f0f9;
+    /* Light grey background */
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
 }
 
-.Upload {
-    margin-top: 1rem;
-    padding-bottom: 1rem;
-    font-size:medium;
+/* Main container */
+.app {
+    height:550px;
+    width: 100%;
+    max-width: 800px;
+    border-radius: 15px;
+    background-color: #fff;
+    /* White background */
+   
+    /* Subtle elevation */
+   margin-bottom: 5px;
+   
 }
 
-.file-upload {
-    width: 400px;
-    /* Adjust the width as needed */
-    height: 50px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-radius: 5px;
-    /* Adjust the height as needed */
-}
-.patient-details-section {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+/* Title */
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
     margin-bottom: 20px;
-    margin-top: 20px;
-    
+    text-align: center;
+}
+
+/* Form elements */
+.patient-details-section {
+    width: 100%;
+    max-width: 600px;
+    /* Adjust as per your design */
 }
 
 .patient-details-section label {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    margin-bottom: 8px;
     font-size: 16px;
     color: #333;
 }
 
-.patient-details-section input,
-.patient-details-section select {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-top: 5px;
+.patient-details-section label .required {
+    color: red;
+    margin-left: 5px;
 }
+
+.patient-details-section input,
+.patient-details-section select,
+.phone-input-container .form-control {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    box-sizing: border-box;
+    /* Ensures padding is included in the width */
+}
+
+.patient-details-section select {
+    height: 38px;
+}
+
+.phone-input-container .form-control {
+    height: 10px;
+}
+
 .diagnose-button {
-    background-color: rgba(13, 31, 64, 0.697);;
+    background-color: rgba(13, 31, 64, 0.697);
     color: white;
     padding: 5px 10px;
-    margin-left:75px;
-    margin-top:10px;
     font-size: 16px;
     border: none;
-    border-radius: 4px;
+    border-radius: 15px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-top: 10px;
 }
 
 .diagnose-button:hover {
-    background-color:rgb(79, 142, 208);
-}
-.file {
-    color: rgba(255, 0, 0, 0.435);
-    margin-top: 1rem;
+    background-color: rgb(79, 142, 208);
 }
 
-.email-wrapper {
+.file-upload-section {
+    width: 100%;
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
-}
-
-.connect-text {
-    margin-right: 10px;
-    font-weight: italic;
-    color:brown;
-
-}
-
-.email-icon-wrapper {
-    position: fixed;
-    bottom: 130px;
-    right: 100px;
-   
-    width: 60px;
-    height: 60px;
-   
-    border-radius: 50%;
-    flex-direction: row;
-}
-
-.email-icon-wrapper svg {
-    fill: white;
-}
-
-
-.common-input-field {
-    width: 300px;
-    height: 40px;
-    background-color: #fff;
-    margin-bottom: 10px;
-    padding: 10px;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 0px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+    border-radius: 8px;
+    transition: border-color 0.3s;
 }
 
-.common-container-style {
-    margin-bottom: 10px;
-    background-color: #f5f5f5;
+.file-upload-section:hover {
+    border-color: #090909;
 }
-.cancel {
-   
-    color: red;
-    padding: 0px 5px;
+
+.file-upload-section label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    background-color: #364f7c;
+    color: white;
+    padding: 10px 20px;
+
+    transition: background-color 0.3s;
+}
+
+.file-upload-section label:hover {
+    background-color: #0056b3;
+}
+
+.file-upload-section input[type="file"] {
+    display: none;
+}
+
+.file-upload-section .filename {
+    font-size: 14px;
+    color: #666;
     margin-top: 10px;
-    margin-left: 10px;
-    border: none;
-    border-radius: 4px;
+}
+
+.file-upload-section .cancel {
+    color: red;
     cursor: pointer;
 }
-.app{
-   
-    border-radius: 30px;
-   
+
+.file-upload-section .cancel:hover {
+    text-decoration: underline;
 }
 
+.diagnosis-section {
+    width: 100%;
+    max-width: 800px;
+    /* Adjust as per your design */
+    margin-top: 20px;
+    padding: 20px;
+    font-size: 16px;
+}
