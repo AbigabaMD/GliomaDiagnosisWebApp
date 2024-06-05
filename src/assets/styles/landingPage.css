@@ -28,9 +28,4 @@ body {
     /* Allow scrolling if content overflows */
 }
 
-.menu {
-    flex-shrink: 0;
-    /* Prevent menu from growing */
-}
 
-/* Adjust other styles if necessary to ensure layout works as expected */

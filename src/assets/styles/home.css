@@ -21,48 +21,20 @@ body {
    
 }
 
-<<<<<<< HEAD
 /* Title */
-.title {
+.formTitle {
     font-size: 24px;
     font-weight: bold;
     color: #333;
     margin-bottom: 20px;
     text-align: center;
-=======
-.file-upload {
-    width: 400px;
-    /* Adjust the width as needed */
-    height: 50px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-radius: 5px;
-    /* Adjust the height as needed */
-    flex-direction: row;
-    display: flex;
->>>>>>> b9d7cda643531ebbbc85af68251da713125dd6b2
 }
 
 /* Form elements */
 .patient-details-section {
-<<<<<<< HEAD
     width: 100%;
     max-width: 600px;
     /* Adjust as per your design */
-=======
-
-    flex-direction: column;
-   
-    
-    gap: 15px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-    margin: 0 auto;
-        /* Center element horizontally */
-        width: fit-content;
-        /* Optional: Set width to fit content */
-    
->>>>>>> b9d7cda643531ebbbc85af68251da713125dd6b2
 }
 
 .patient-details-section label {
@@ -165,16 +137,9 @@ body {
     color: red;
     cursor: pointer;
 }
-<<<<<<< HEAD
 
 .file-upload-section .cancel:hover {
     text-decoration: underline;
-=======
-.content{
-   
-    border-radius: 30px;
-   
->>>>>>> b9d7cda643531ebbbc85af68251da713125dd6b2
 }
 .heading{
     font-weight: 700;
@@ -184,8 +149,7 @@ body {
 }
 .titledash{
     padding-top: 10px;
-
-<<<<<<< HEAD
+}
 .diagnosis-section {
     width: 100%;
     max-width: 800px;
@@ -193,16 +157,18 @@ body {
     margin-top: 20px;
     padding: 20px;
     font-size: 16px;
-=======
 }
-.diagnosePart{
-    margin: 0 auto;
-        /* Center element horizontally */
-        width: fit-content;
-        /* Optional: Set width to fit content */
-       
-}
-.patientLabel{
-   padding-top: 10px;
->>>>>>> b9d7cda643531ebbbc85af68251da713125dd6b2
+.form{
+    height: 80vh;
+        /* Set a fixed height */
+        overflow-y: auto;
+        /* Enable vertical scrolling */
+        padding: 20px;
+        margin-bottom: 30px;
+        max-width: 700px;
+        margin: 20px auto;
+        border-radius: 15px;
+        background-color: #f9f9f9;
+        /* Add a background color if needed */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

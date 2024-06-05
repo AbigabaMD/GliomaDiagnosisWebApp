@@ -28,7 +28,7 @@ const LandingPage = () => {
         <div className="app">
             {/* Dashboard Header */}
             <header className="dashboard-header">
-                <h3>GLIOMA BTDS</h3>
+                <div className="system-title">GLIOMA BTDS</div>
                 <div className="menu-icon" onClick={toggleMenu}>
                     ☰ {/* You can replace this with your menu icon */}
                 </div>

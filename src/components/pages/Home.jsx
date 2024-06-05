@@ -77,7 +77,7 @@ const Home = () => {
     return (
         <div >
             <header className="dashboard-header">
-                <h1 className="titledash">GLIOMA BTDS</h1>
+                <h1 className="system-title">GLIOMA BTDS</h1>
                 <div className="menu-icon" onClick={toggleMenu}>
                     ☰ {/* You can replace this with your menu icon */}
                 </div>

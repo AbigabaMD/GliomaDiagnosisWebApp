@@ -96,3 +96,7 @@
 .app{
     background: rgba(2, 171, 255, 0.752);
 }
+.system-title {
+    color: #fff;
+    padding-top: 8px;
+}
