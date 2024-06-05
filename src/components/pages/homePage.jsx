@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt, faUsers, faUserInjured, faPoll, faQuestion, faCog } from '@fortawesome/free-solid-svg-icons';
-import { faUser, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faUsers, faUserInjured, faPoll, faQuestion, faCog, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 import Users from './users';
 import Patients from './patients';
 import Results from './results';
 import Faqs from './faqs';
 import Settings from './settings';
-
-
 import Dashboard from './dashboard';
-import './homePage.css';
+
+import './landingPage.css';
 import { Navbar } from 'react-bootstrap';
 
-// Main App component
 const LandingPage = () => {
     const [isMenuOpen, setMenuOpen] = useState(true); // Initialize with 'true' to have the menu open by default
     const [selectedMenuItem, setSelectedMenuItem] = useState('dashboard'); // Initialize with 'dashboard'
@@ -36,10 +33,10 @@ const LandingPage = () => {
                     ☰ {/* You can replace this with your menu icon */}
                 </div>
                 <div className='DoctorLogout'>
-                   
-                    <div className='logout'> <FontAwesomeIcon icon={faSignOutAlt} className='IconsOnTopRightCorner' />Logout</div>
+                    <div className='logout'>
+                        <FontAwesomeIcon icon={faSignOutAlt} className='IconsOnTopRightCorner' /> Logout
+                    </div>
                 </div>
-
             </header>
 
             {/* Left Side Menu */}
@@ -63,13 +60,11 @@ const LandingPage = () => {
                     <li onClick={() => handleMenuClick('settings')} className={selectedMenuItem === 'settings' ? 'selected' : ''}>
                         <FontAwesomeIcon icon={faCog} /> Settings
                     </li>
-                    {/* Add more menu items as needed */}
                 </ul>
             </nav>
 
             {/* Main Content */}
             <main className="main-content">
-                {/* Conditionally render the selected menu item or a default message */}
                 {selectedMenuItem === 'dashboard' && <Dashboard />}
                 {selectedMenuItem === 'users' && <Users />}
                 {selectedMenuItem === 'patients' && <Patients />}

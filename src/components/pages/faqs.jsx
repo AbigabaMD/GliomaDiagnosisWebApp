@@ -14,7 +14,6 @@ const Faqs = () => {
     return (
         <div>
             <h1 className="heading"> Frequently asked Questions (FAQS)</h1>
-
             <div className="block rounded-lg bg-white p-6 shadow-[0_2px_25px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700" style={{ width: '150%' }}>
                 <p>
                     <strong>QN: What is the Brain Tumor Detection System for Glioma Diagnosis?</strong><br /><br />

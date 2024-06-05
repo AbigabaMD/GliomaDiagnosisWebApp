@@ -8,7 +8,7 @@ import 'react-phone-input-2/lib/style.css';
 import '../../assets/styles/home.css';
 import * as tf from '@tensorflow/tfjs';
 import { v4 as uuidv4 } from 'uuid';
-
+import '../../assets/styles/patientReg.css';
 import { supabase } from "../../supabase/client";
 
 const Dashboard = () => {
@@ -208,11 +208,12 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="app">
+        <div>
             <ToastContainer />
-            <h3 className='title'>Patient's Details</h3>
+           
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='form' >
+                <h1 className="formTitle">Patient's Details</h1>
                 <div className="patient-details-section">
                     <label>
                         Full Name<span className="required">*</span>
@@ -265,7 +266,7 @@ const Dashboard = () => {
                             className="common-input-field"
                         />
                     </label>
-                    <label>
+                    <label className="patientLabel">
                         Telephone Number:
                         <PhoneInput
                             country={'ug'}
@@ -300,6 +301,7 @@ const Dashboard = () => {
                     </button>
                 </div>
             </form>
+
 
             {diagnosisResults && (
                 <div className="diagnosis-section">

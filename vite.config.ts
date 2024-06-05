@@ -7,5 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     commonjs(), // Add the commonjs plugin to handle CommonJS modules
+
+    
   ],
 });

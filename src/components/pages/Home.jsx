@@ -75,9 +75,9 @@ const Home = () => {
     };
 
     return (
-        <div>
+        <div >
             <header className="dashboard-header">
-                <h3>GLIOMA BTDS</h3>
+                <h1 className="titledash">GLIOMA BTDS</h1>
                 <div className="menu-icon" onClick={toggleMenu}>
                     ☰ {/* You can replace this with your menu icon */}
                 </div>
@@ -95,9 +95,9 @@ const Home = () => {
                     <li onClick={() => handleMenuClick('dashboard')} className={selectedMenuItem === 'dashboard' ? 'selected' : ''}>
                         <FontAwesomeIcon icon={faTachometerAlt} /> Dashboard
                     </li>
-                    <li onClick={() => handleMenuClick('users')} className={selectedMenuItem === 'users' ? 'selected' : ''}>
+                    {/* <li onClick={() => handleMenuClick('users')} className={selectedMenuItem === 'users' ? 'selected' : ''}>
                         <FontAwesomeIcon icon={faUsers} /> Users
-                    </li>
+                    </li> */}
                     <li onClick={() => handleMenuClick('patients')} className={selectedMenuItem === 'patients' ? 'selected' : ''}>
                         <FontAwesomeIcon icon={faUserInjured} /> Patients
                     </li>
@@ -113,9 +113,9 @@ const Home = () => {
                     {/* Add more menu items as needed */}
                 </ul>
             </nav>
-        <div className="app">
+        <div className="content">
             {/* Main Content */}
-            <main className="main-content">
+                <main className="main-content">
                 {/* Conditionally render the selected menu item or a default message */}
                 {selectedMenuItem === 'dashboard' && <Dashboard />}
                 {selectedMenuItem === 'users' && <Users />}
