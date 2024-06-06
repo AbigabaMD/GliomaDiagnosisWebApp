@@ -20,14 +20,14 @@
 }
 
 .menu {
-    width: 200px;
+    width: 165px;
     background: rgba(2, 171, 255, 0.752);
     backdrop-filter: blur(10px);
     color: #fff;
     transition: transform 0.3s ease;
     transform: translateX(-100%);
     position: fixed;
-    top: 60px;
+    top: 55px;
     bottom: 0;
     left: 0;
     padding-top: 10px;
@@ -66,13 +66,11 @@
 }
 
 .main-content {
-  
-    padding: 20px;
-    margin-top: 60px;
-    background-color: #fff;
-    border-radius: 30px;
-    border-width:1;
-    border-color: #000;
+    height: 100%;
+    width: 88vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .DoctorLogout {
@@ -92,4 +90,11 @@
     padding-right: 10px;
     font-size: 24px;
     color: #fff;
+}
+.app{
+    background: rgba(2, 171, 255, 0.752);
+}
+.system-title {
+    color: #fff;
+    padding-top: 8px;
 }

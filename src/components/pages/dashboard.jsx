@@ -17,6 +17,7 @@ const Dashboard = () => {
     const [diagnosisResults, setDiagnosisResults] = useState("");
     const [filename, setFilename] = useState("No file Uploaded");
     const [image, setImage] = useState(null);
+    const [elevationLevel, setElevationLevel] = useState(1); // Default elevation level
     const [fileURL, setFileURL] = useState(""); // Store file URL
     const [patientDetails, setPatientDetails] = useState({
         fullName: "",
@@ -178,45 +179,44 @@ const Dashboard = () => {
         reader.readAsDataURL(image);
     };
 
-   const savePatientDetails = async (details) => {
-    const { fullName, age, gender, address, phoneNumber, diagnosis, imageUrl } = details;
+    const savePatientDetails = async ({ fullName, age, gender, address, phoneNumber, diagnosis, imageUrl }) => {
+        try {
+            const { data, error } = await supabase
+                .from('Patients_Reg')
+                .insert([
+                    {
+                        Full_name: fullName,
+                        Age: age,
+                        Gender: gender,
+                        Address: address,
+                        Telephone_Number: phoneNumber,
+                        diagnosis: diagnosis,
+                        imageUrl: imageUrl // Pass imageUrl as a string
+                    }
+                ]);
 
-    try {
-        const { data, error } = await supabase
-            .from('Patients_Reg')
-            .insert([
-                { 
-                    Full_name: fullName, 
-                    Age: age, 
-                    Gender: gender, 
-                    Address: address, 
-                    Telephone_Number: phoneNumber, 
-                    diagnosis: diagnosis, 
-                    imageUrl: imageUrl // Pass imageUrl as a string
-                }
-            ]);
+            if (error) {
+                throw error;
+            }
 
-        if (error) {
-            throw error;
+            console.log('Patient details saved:', data);
+            toast.success('Patient details saved successfully!');
+        } catch (error) {
+            console.error('Error saving patient details:', error);
+            toast.error('Error saving patient details.');
         }
-
-        console.log('Patient details saved:', data);
-        toast.success('Patient details saved successfully!');
-    } catch (error) {
-        console.error('Error saving patient details:', error);
-        toast.error('Error saving patient details.');
-    }
-};
+    };
 
     return (
-        <div className="app">
+        <div>
             <ToastContainer />
-            <h3 className='title'>Patient's Details</h3>
+           
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='form' >
+                <h1 className="formTitle">Patient's Details</h1>
                 <div className="patient-details-section">
                     <label>
-                        Full Name:
+                        Full Name<span className="required">*</span>
                         <input
                             type="text"
                             name="fullName"
@@ -224,11 +224,11 @@ const Dashboard = () => {
                             value={patientDetails.fullName}
                             onChange={handleInputChange}
                             required
-                            className="common-input-field"
+                            className="common"
                         />
                     </label>
                     <label>
-                        Age:
+                        Age<span className="required">*</span>
                         <input
                             type="number"
                             name="age"
@@ -236,17 +236,17 @@ const Dashboard = () => {
                             value={patientDetails.age}
                             onChange={handleInputChange}
                             required
-                            className="common-input-field"
+                            className="common"
                         />
                     </label>
                     <label>
-                        Gender:
+                        Gender<span className="required">*</span>
                         <select
                             name="gender"
                             value={patientDetails.gender}
                             onChange={handleInputChange}
                             required
-                            className="common-input-field"
+                            className="common"
                         >
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
@@ -255,7 +255,7 @@ const Dashboard = () => {
                         </select>
                     </label>
                     <label>
-                        Address:
+                        Address<span className="required">*</span>
                         <input
                             type="text"
                             name="address"
@@ -263,48 +263,48 @@ const Dashboard = () => {
                             value={patientDetails.address}
                             onChange={handleInputChange}
                             required
-                            className="common-input-field"
+                            className="common"
                         />
                     </label>
-                    <label>
+                    <label className="patientLabel">
                         Telephone Number:
                         <PhoneInput
                             country={'ug'}
                             value={patientDetails.phoneNumber}
                             onChange={handlePhoneChange}
                             containerStyle={{
-                                width: 300,
+                                width: '100%',
                                 marginBottom: 10,
                                 backgroundColor: '#f5f5f5',
                             }}
-                            inputStyle={{ width: 300, height: 40, backgroundColor: '#fff' }}
+                            inputStyle={{ width: '100%', height: 40, backgroundColor: '#fff' }}
                         />
                     </label>
                 </div>
 
                 <div className="file-upload-section">
                     <label>
-                        <input type="file" name="file" className="hidden" onChange={handleFileUpload} />
+                        Upload Brain Scan<></>
+                        <input type="file" name="file" onChange={handleFileUpload} required />
                     </label>
-                </div>
-                <span className="file">{filename}</span>
-                {image && (
-                    <span className="cancel" onClick={handleFileCancel}>
-                        X
+                    <span className="filename">{filename}</span>
+                    {image && (
+                        <span className="cancel" onClick={handleFileCancel}>
+                            X
+                        </span>
+                    )}</div>
+                    <span className='diagnose'>
+                        <button className="diagnose-button" type="button" onClick={handleDiagnose}>
+                            Diagnose
+                        </button>
                     </span>
-                )}
-                <div className='diagnose'>
-                    <button className="diagnose-button" type="button" onClick={handleDiagnose}>
-                        Diagnose
-                    </button>
-                </div>
+                
+
+                
             </form>
 
-            {diagnosisResults && (
-                <div className="diagnosis-section">
-                    <p>{diagnosisResults}</p>
-                </div>
-            )}
+
+            
         </div>
     );
 };
