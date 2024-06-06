@@ -66,13 +66,11 @@
 }
 
 .main-content {
-  
-   
-   
- 
-
-  
-  
+    height: 100%;
+    width: 88vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .DoctorLogout {

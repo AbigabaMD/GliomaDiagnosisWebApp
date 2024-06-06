@@ -287,15 +287,16 @@ const Settings = () => {
 
                         <div className="file-upload-section">
                             <label>
-                                Upload Brain Scan<></>
-                                <input type="file" name="file" onChange={handleFileUpload} required />
+                                Upload New Image:
+                                <input type="file" name="file" onChange={handleFileUpload} />
                             </label>
                             <span className="filename">{filename}</span>
                             {image && (
                                 <span className="cancel" onClick={handleFileCancel}>
                                     X
                                 </span>
-                            )}</div>
+                            )}
+                        </div>
                     </form>
 
                     <div className="button-container">

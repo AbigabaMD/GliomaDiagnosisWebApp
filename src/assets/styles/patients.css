@@ -1,0 +1,76 @@
+.patients-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #364f7c;
+    margin-bottom: 10px;
+    text-align: center;
+    margin-bottom: 80px;
+    margin-top: 0px;
+}
+/* patients.css */
+
+
+.patients-container {
+    margin-top: 1rem;
+}
+
+
+
+.table-auto {
+    width: 100%;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fff;
+}
+
+.table-auto th,
+.table-auto td {
+    text-align: left;
+    padding: 0.75rem;
+}
+
+.table-auto th {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    color: #fff;
+    background-color: #364f7c;
+    border-bottom: 2px solid #cbd5e0;
+}
+
+.table-auto td {
+    font-size: 0.875rem;
+    color: #4a5568;
+    border-bottom: 1px solid #cbd5e0;
+}
+
+.table-auto .dark {
+    background-color: #1a202c;
+    color: #cbd5e0;
+}
+
+.table-auto .dark th {
+    color: #cbd5e0;
+    border-bottom-color: #2d3748;
+}
+
+.table-auto .dark td {
+    color: #cbd5e0;
+    border-bottom-color: #2d3748;
+}
+
+.table-auto .hover:bg-gray-100:focus-within:bg-gray-100 {
+    background-color: #edf2f7;
+}
+
+.table-auto .dark.hover:bg-gray-800:focus-within:bg-gray-800 {
+    background-color: #2d3748;
+}
+
+.whitespace-no-wrap {
+    white-space: nowrap;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+}
