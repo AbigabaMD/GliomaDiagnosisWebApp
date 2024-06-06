@@ -168,16 +168,16 @@ const Results = () => {
 
 
     return (
-        <div className="results-card">
+        <div className='results-card'>
         
 
-            <div id="results-content" className="textAttributes">
+            <div className="textAttributes">
                 {patients.map((patient, index) => (
                     <div
                         key={index}
                        
                     >
-                        <h2 className="text-lg font-semibold mb-2">Patient Details</h2>
+                        <h2 className="results-title">Patient Details</h2>
                         <p><strong>Full Name:</strong> {patient.Full_name}</p>
                         <p><strong>Age:</strong> {patient.Age}</p>
                         <p><strong>Gender:</strong> {patient.Gender}</p>
@@ -187,8 +187,8 @@ const Results = () => {
                         <p><strong> Tumor: </strong> {patient.diagnosis}</p>
                       
 
-                        <hr className="my-4" />
-                        <div className="flex justify-end">
+                        <hr className="my-3" />
+                        <div>
                             <button
                                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                                 onClick={() => downloadPDF(patient)}
