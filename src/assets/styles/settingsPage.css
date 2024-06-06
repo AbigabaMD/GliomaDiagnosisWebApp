@@ -1,0 +1,168 @@
+.settings-card {
+    height: 88vh;
+    
+        padding: 10px;
+        margin-top: 50px;
+        width: 500px;
+    
+        border-radius: 25px;
+        background-color: #fff;
+        /* Add a background color if needed */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+ 
+}
+
+.settings-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.dropdown-container {
+    margin-bottom: 20px;
+}
+
+.dropdown-container label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.dropdown-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.patient-details {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  
+}
+
+.patient-details h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.patient-details form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.patient-details form label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.patient-details form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.patient-details form input.readonly {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+.patient-details form input.edit-mode {
+    border-color: #007bff;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.edit-button,
+.update-button,
+.delete-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button:hover,
+.update-button:hover,
+.delete-button:hover {
+    background-color: #0056b3;
+}
+
+.delete-button {
+    background-color: #dc3545;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.file-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
+}
+
+.file-upload-section:hover {
+    border-color: #007bff;
+}
+
+.file-upload-section label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.file-upload-section label:hover {
+    background-color: #0056b3;
+}
+
+.file-upload-section input[type="file"] {
+    display: none;
+}
+
+.file-upload-section .filename {
+    font-size: 14px;
+    color: #666;
+}
+
+.file-upload-section .cancel {
+    color: red;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.file-upload-section .cancel:hover {
+    text-decoration: underline;
+}

@@ -8,7 +8,7 @@ import 'react-phone-input-2/lib/style.css';
 import '../../assets/styles/home.css';
 import * as tf from '@tensorflow/tfjs';
 import { v4 as uuidv4 } from 'uuid';
-import '../../assets/styles/patientReg.css';
+
 import { supabase } from "../../supabase/client";
 
 const Dashboard = () => {
@@ -224,7 +224,7 @@ const Dashboard = () => {
                             value={patientDetails.fullName}
                             onChange={handleInputChange}
                             required
-                            className="common-input-field"
+                            className="common"
                         />
                     </label>
                     <label>
@@ -236,7 +236,7 @@ const Dashboard = () => {
                             value={patientDetails.age}
                             onChange={handleInputChange}
                             required
-                            className="common-input-field"
+                            className="common"
                         />
                     </label>
                     <label>
@@ -246,7 +246,7 @@ const Dashboard = () => {
                             value={patientDetails.gender}
                             onChange={handleInputChange}
                             required
-                            className="common-input-field"
+                            className="common"
                         >
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
@@ -263,7 +263,7 @@ const Dashboard = () => {
                             value={patientDetails.address}
                             onChange={handleInputChange}
                             required
-                            className="common-input-field"
+                            className="common"
                         />
                     </label>
                     <label className="patientLabel">
@@ -292,22 +292,19 @@ const Dashboard = () => {
                         <span className="cancel" onClick={handleFileCancel}>
                             X
                         </span>
-                    )}
-                </div>
+                    )}</div>
+                    <span className='diagnose'>
+                        <button className="diagnose-button" type="button" onClick={handleDiagnose}>
+                            Diagnose
+                        </button>
+                    </span>
+                
 
-                <div className='diagnose'>
-                    <button className="diagnose-button" type="button" onClick={handleDiagnose}>
-                        Diagnose
-                    </button>
-                </div>
+                
             </form>
 
 
-            {diagnosisResults && (
-                <div className="diagnosis-section">
-                    <p>{diagnosisResults}</p>
-                </div>
-            )}
+            
         </div>
     );
 };

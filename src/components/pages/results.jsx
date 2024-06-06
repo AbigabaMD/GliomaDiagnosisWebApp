@@ -171,13 +171,13 @@ const Results = () => {
         <div className="results-card">
         
 
-            <div  className="textAttributes">
+            <div id="results-content" className="textAttributes">
                 {patients.map((patient, index) => (
                     <div
                         key={index}
-                        
+                       
                     >
-                        <h2 className="results-title">Patient Details</h2>
+                        <h2 className="text-lg font-semibold mb-2">Patient Details</h2>
                         <p><strong>Full Name:</strong> {patient.Full_name}</p>
                         <p><strong>Age:</strong> {patient.Age}</p>
                         <p><strong>Gender:</strong> {patient.Gender}</p>
