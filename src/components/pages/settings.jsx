@@ -7,25 +7,19 @@ import * as tf from '@tensorflow/tfjs';
 import { v4 as uuidv4 } from 'uuid';
 import { useAuth } from "../../context/AuthProvider";
 import axios from "axios";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const Settings = () => {
     const [patients, setPatients] = useState([]);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [editedPatient, setEditedPatient] = useState(null);
-    const [filename, setFilename] = useState("No file Uploaded");
+    const [filename, setFilename] = useState("No file uploaded");
     const [image, setImage] = useState(null);
     const [fileURL, setFileURL] = useState(""); // Store file URL
-
     const { user } = useAuth();
-    const [diagnosisResults, setDiagnosisResults] = useState("");
-
- 
-    const [elevationLevel, setElevationLevel] = useState(1); // Default elevation level
- 
+    
     const CDNURL = 'https://nfxmgafcnppcpgbjkmyd.supabase.co/storage/v1/object/public/images/';
-
     useEffect(() => {
         fetchPatientDetails();
     }, []);
@@ -74,34 +68,81 @@ const Settings = () => {
 
     const handleUpdatePatient = async () => {
         try {
-            const { data, error } = await supabase
-                .from('Patients_Reg')
-                .update({
-                    Full_name: editedPatient.Full_name,
-                    Age: editedPatient.Age,
-                    Gender: editedPatient.Gender,
-                    Address: editedPatient.Address,
-                    Telephone_Number: editedPatient.Telephone_Number,
-                    diagnosis: editedPatient.diagnosis,
-                    imageUrl: fileURL // Include the image URL in update
-                })
-                .eq('id', editedPatient.id);
+            if (image) {
+                const reader = new FileReader();
+                reader.onload = async () => {
+                    const img = new Image();
+                    img.src = reader.result;
+                    img.onload = async () => {
+                        const imageTensor = tf.browser.fromPixels(img);
+                        const resizedImage = tf.image.resizeBilinear(imageTensor, [224, 224]);
+                        const normalizedImage = resizedImage.div(tf.scalar(255));
+                        const input = normalizedImage.expandDims(0);
+                        const prediction = window.model.predict(input);
+                        const probabilities = prediction.dataSync();
+                        const maxProbabilityIndex = probabilities.indexOf(Math.max(...probabilities));
+                        const labels = ["glioma_tumor", "no_tumor", "meningioma_tumor", "pituitary_tumor"];
+                        const diagnosis = labels[maxProbabilityIndex];
+                        setEditedPatient(prevState => ({ ...prevState, diagnosis: diagnosis }));
+                        toast.success(`Results have been uploaded, check the results section`, {});
 
-            if (error) {
-                throw error;
-            }
+                        console.log('Saving patient details to Supabase', {
+                            Full_name: editedPatient.Full_name,
+                            Age: editedPatient.Age,
+                            Gender: editedPatient.Gender,
+                            Address: editedPatient.Address,
+                            Telephone_Number: editedPatient.Telephone_Number,
+                            diagnosis: diagnosis,
+                            imageUrl: fileURL // Include the image URL
+                        });
 
-            const updatedPatients = patients.map(p => {
-                if (p.id === editedPatient.id) {
-                    return { ...p, ...editedPatient };
+                        // Save patient details to Supabase
+                        await supabase
+                            .from('Patients_Reg')
+                            .update({
+                                Full_name: editedPatient.Full_name,
+                                Age: editedPatient.Age,
+                                Gender: editedPatient.Gender,
+                                Address: editedPatient.Address,
+                                Telephone_Number: editedPatient.Telephone_Number,
+                                diagnosis: diagnosis,
+                                imageUrl: fileURL // Include the image URL in update
+                            })
+                            .eq('id', editedPatient.id);
+                    };
+                };
+                reader.readAsDataURL(image);
+            } else {
+                // Save patient details to Supabase without a new diagnosis
+                const { data, error } = await supabase
+                    .from('Patients_Reg')
+                    .update({
+                        Full_name: editedPatient.Full_name,
+                        Age: editedPatient.Age,
+                        Gender: editedPatient.Gender,
+                        Address: editedPatient.Address,
+                        Telephone_Number: editedPatient.Telephone_Number,
+                        diagnosis: editedPatient.diagnosis,
+                        imageUrl: fileURL // Include the image URL in update
+                    })
+                    .eq('id', editedPatient.id);
+
+                if (error) {
+                    throw error;
                 }
-                return p;
-            });
-            setPatients(updatedPatients);
-            setSelectedPatient({ ...editedPatient });
 
-            console.log('Patient updated successfully:', data);
-            setEditMode(false);
+                const updatedPatients = patients.map(p => {
+                    if (p.id === editedPatient.id) {
+                        return { ...p, ...editedPatient };
+                    }
+                    return p;
+                });
+                setPatients(updatedPatients);
+                setSelectedPatient({ ...editedPatient });
+
+                console.log('Patient updated successfully:', data);
+                setEditMode(false);
+            }
         } catch (error) {
             console.error('Error updating patient:', error);
         }
@@ -129,6 +170,7 @@ const Settings = () => {
         }
     };
 
+    // Inside handleFileUpload function
     const handleFileUpload = async (event) => {
         const selectedImage = event.target.files[0];
         console.log('Selected file:', selectedImage);
@@ -142,7 +184,7 @@ const Settings = () => {
         setImage(selectedImage);
 
         try {
-            const userId = user.id;  // Assuming user object has an id field
+            const userId = user.id;
             const fileName = `${userId}/${uuidv4()}`;
             const { data, error } = await supabase.storage
                 .from('images')
@@ -155,7 +197,7 @@ const Settings = () => {
                 throw error;
             }
 
-            const imageUrl = `${CDNURL}${fileName}`;
+            const imageUrl = `${CDNURL}${fileName}`; // Update imageUrl format
             console.log('Image URL:', imageUrl);
             setFileURL(imageUrl);
             toast.success('File uploaded to Supabase successfully!');
@@ -166,10 +208,11 @@ const Settings = () => {
     };
 
     const handleFileCancel = () => {
-        setFilename("No file Uploaded");
+        setFilename("No file uploaded");
         setImage(null);
         document.querySelector("input[type='file']").value = null;
     };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -197,7 +240,6 @@ const Settings = () => {
             console.error('Failed to load model', error);
         }
     };
-
 
     return (
         <div className="settings-card">
@@ -274,7 +316,7 @@ const Settings = () => {
                             />
                         </label>
                         <label>
-                            Tumor:
+                            Diagnosis:
                             <input
                                 type="text"
                                 name="diagnosis"
