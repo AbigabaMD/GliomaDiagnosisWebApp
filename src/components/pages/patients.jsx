@@ -28,7 +28,7 @@ const Patients = () => {
     }, []);
 
     return (
-        <div >
+        <div>
             <main>
                 {/* Patients Table */}
                 <div>

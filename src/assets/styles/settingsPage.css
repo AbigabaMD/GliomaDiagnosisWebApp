@@ -28,6 +28,7 @@
 
 .dropdown-container {
     margin-bottom: 20px;
+    width:100%;
 }
 
 .dropdown-container label {

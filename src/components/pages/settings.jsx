@@ -201,7 +201,7 @@ const Settings = () => {
 
     return (
         <div className="settings-card">
-            <h2 className="settings-title">Manage Patients</h2>
+            <h2 className="settings-title">Choose Patients to edit their Details</h2>
             <div className="dropdown-container">
                 <label htmlFor="patient-select">Select Patient:</label>
                 <select id="patient-select" onChange={handlePatientChange}>
