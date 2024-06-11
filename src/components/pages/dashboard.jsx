@@ -5,20 +5,22 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import '../../assets/styles/home.css';
 import * as tf from '@tensorflow/tfjs';
 import { v4 as uuidv4 } from 'uuid';
-
+import Modal from 'react-modal';
 import { supabase } from "../../supabase/client";
+import '../../assets/styles/modal.css';
+
+const CDNURL = 'https://nfxmgafcnppcpgbjkmyd.supabase.co/storage/v1/object/public/images/';
 
 const Dashboard = () => {
-    const [isMenuOpen, setMenuOpen] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
     const { user } = useAuth();
     const [diagnosisResults, setDiagnosisResults] = useState("");
     const [filename, setFilename] = useState("No file Uploaded");
     const [image, setImage] = useState(null);
-    const [elevationLevel, setElevationLevel] = useState(1); // Default elevation level
-    const [fileURL, setFileURL] = useState(""); // Store file URL
+    const [imagePreview, setImagePreview] = useState(null);
+    const [fileURL, setFileURL] = useState("");
     const [patientDetails, setPatientDetails] = useState({
         fullName: "",
         age: "",
@@ -27,23 +29,7 @@ const Dashboard = () => {
         address: ""
     });
 
-    const CDNURL = 'https://nfxmgafcnppcpgbjkmyd.supabase.co/storage/v1/object/public/images/';
-
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch("http://localhost:5000");
-                if (!res.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                const data = await res.json();
-                console.log(data);
-            } catch (error) {
-                console.error("Failed to fetch data:", error);
-            }
-        };
-
-        fetchData();
         loadModel();
     }, []);
 
@@ -81,7 +67,7 @@ const Dashboard = () => {
         try {
             const res = await axios.post("http://localhost:5000/upload", formData);
             console.log(res.data.message);
-            setDiagnosisResults(res.data.message); // Set diagnosis results
+            setDiagnosisResults(res.data.message);
             toast.success("File uploaded successfully", {});
         } catch (error) {
             console.error("Error uploading file:", error);
@@ -98,11 +84,23 @@ const Dashboard = () => {
             return;
         }
 
+        const allowedExtensions = /(\.jpg|\.jpeg|\.dicom|\.png)$/i;
+        if (!allowedExtensions.exec(selectedImage.name)) {
+            toast.error("Invalid file type. Only .jpg, .jpeg, .dicom, and .png files are allowed.");
+            return;
+        }
+
         setFilename(selectedImage.name);
         setImage(selectedImage);
+        setImagePreview(URL.createObjectURL(selectedImage));
+
+        // Check if the modal is already open before opening it
+        if (!modalIsOpen) {
+            setModalIsOpen(true);
+        }
 
         try {
-            const userId = user.id;  // Assuming user object has an id field
+            const userId = user.id;
             const fileName = `${userId}/${uuidv4()}`;
             const { data, error } = await supabase.storage
                 .from('images')
@@ -118,7 +116,7 @@ const Dashboard = () => {
             const imageUrl = `${CDNURL}${fileName}`;
             console.log('Image URL:', imageUrl);
             setFileURL(imageUrl);
-            toast.success('File uploaded to Supabase successfully!');
+
         } catch (error) {
             console.error('Error uploading file to Supabase:', error);
             toast.error('Error uploading file to Supabase.');
@@ -128,6 +126,8 @@ const Dashboard = () => {
     const handleFileCancel = () => {
         setFilename("No file Uploaded");
         setImage(null);
+        setImagePreview(null);
+        setModalIsOpen(false);
         document.querySelector("input[type='file']").value = null;
     };
 
@@ -151,20 +151,9 @@ const Dashboard = () => {
                 const maxProbabilityIndex = probabilities.indexOf(Math.max(...probabilities));
                 const labels = ["glioma_tumor", "no_tumor", "meningioma_tumor", "pituitary_tumor"];
                 const diagnosis = labels[maxProbabilityIndex];
-                setDiagnosisResults(`Diagnosis: ${diagnosis}`); // Set diagnosis results
-                toast.success(`Results have been uploaded, check the results section`, {});
+                setDiagnosisResults(diagnosis);
 
-                console.log('Saving patient details to Supabase', {
-                    fullName: patientDetails.fullName,
-                    age: patientDetails.age,
-                    gender: patientDetails.gender,
-                    address: patientDetails.address,
-                    phoneNumber: patientDetails.phoneNumber,
-                    diagnosis: diagnosis,
-                    imageUrl: fileURL // Include the image URL
-                });
-
-                // Save patient details to Supabase
+                // Call savePatientDetails after setting diagnosisResults
                 await savePatientDetails({
                     fullName: patientDetails.fullName,
                     age: patientDetails.age,
@@ -172,8 +161,10 @@ const Dashboard = () => {
                     address: patientDetails.address,
                     phoneNumber: patientDetails.phoneNumber,
                     diagnosis: diagnosis,
-                    imageUrl: fileURL // Include the image URL
+                    imageUrl: fileURL
                 });
+
+                setModalIsOpen(false); // Close modal after diagnosis and saving
             };
         };
         reader.readAsDataURL(image);
@@ -181,6 +172,10 @@ const Dashboard = () => {
 
     const savePatientDetails = async ({ fullName, age, gender, address, phoneNumber, diagnosis, imageUrl }) => {
         try {
+            // Automatically assign user_id
+            const userId = user.id;
+
+            // Save patient details to Supabase
             const { data, error } = await supabase
                 .from('Patients_Reg')
                 .insert([
@@ -191,7 +186,8 @@ const Dashboard = () => {
                         Address: address,
                         Telephone_Number: phoneNumber,
                         diagnosis: diagnosis,
-                        imageUrl: imageUrl // Pass imageUrl as a string
+                        imageUrl: imageUrl,
+                        user_id: userId // Associate patient details with the authenticated user
                     }
                 ]);
 
@@ -210,9 +206,8 @@ const Dashboard = () => {
     return (
         <div>
             <ToastContainer />
-           
 
-            <form onSubmit={handleSubmit} className='form' >
+            <form onSubmit={handleSubmit} className='form'>
                 <h1 className="formTitle">Patient's Details</h1>
                 <div className="patient-details-section">
                     <label>
@@ -284,27 +279,35 @@ const Dashboard = () => {
 
                 <div className="file-upload-section">
                     <label>
-                        Upload Brain Scan<></>
-                        <input type="file" name="file" onChange={handleFileUpload} required />
+                        Upload Brain Scan
+                        <input type="file" name="file" accept=".jpg,.jpeg,.dicom,.png" onChange={handleFileUpload} required />
                     </label>
                     <span className="filename">{filename}</span>
                     {image && (
-                        <span className="cancel" onClick={handleFileCancel}>
+                        <span className="cancelIcon" onClick={handleFileCancel}>
                             X
                         </span>
-                    )}</div>
-                    <span className='diagnose'>
+                    )}
+                </div>
+
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={() => setModalIsOpen(false)}
+                    contentLabel="Image Preview"
+                    className="modal"
+                    overlay className="overlay"
+                >
+                    <div className="modal-content">
+                        {imagePreview && <img src={imagePreview} alt="Image Preview" className="image-preview" />}
                         <button className="diagnose-button" type="button" onClick={handleDiagnose}>
                             Diagnose
                         </button>
-                    </span>
-                
-
-                
+                        <button className="cancel" onClick={() => setModalIsOpen(false)}>
+                            Cancel
+                        </button>
+                    </div>
+                </Modal>
             </form>
-
-
-            
         </div>
     );
 };

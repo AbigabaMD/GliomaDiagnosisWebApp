@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from "../../supabase/client";
+import { useAuth } from "../../context/AuthProvider";
 import '../../assets/styles/patients.css';
 
 const Patients = () => {
     const [patients, setPatients] = useState([]);
+    const { user } = useAuth(); // Get the current user
 
     const fetchPatientDetails = async () => {
         try {
             const { data, error } = await supabase
                 .from('Patients_Reg')
-                .select('*'); // Ensure all necessary columns are selected
+                .select('*')
+                .eq('user_id', user.id); // Filter by user ID
 
             if (error) {
                 throw error;
@@ -24,8 +27,10 @@ const Patients = () => {
     };
 
     useEffect(() => {
-        fetchPatientDetails();
-    }, []);
+        if (user) {
+            fetchPatientDetails();
+        }
+    }, [user]);
 
     return (
         <div>
