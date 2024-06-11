@@ -2,25 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { supabase } from '../../supabase/client'; // Ensure this path is correct
 import '../../assets/styles/results.css';
 
 const Results = () => {
-    const [isMenuOpen, setMenuOpen] = useState(false);
     const [patients, setPatients] = useState([]);
+    const [userId, setUserId] = useState(null);
 
-    const toggleMenu = () => {
-        setMenuOpen(!isMenuOpen);
+    const fetchUser = async () => {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+            console.error('Error fetching user session:', error);
+            return;
+        }
+        if (session) {
+            setUserId(session.user.id);
+        }
     };
 
-    const CDNURL = 'https://nfxmgafcnppcpgbjkmyd.supabase.co/storage/v1/object/public/images/';
-
     const fetchPatientDetails = async () => {
+        if (!userId) return;
+
         try {
             const { data, error } = await supabase
                 .from('Patients_Reg')
-                .select('*');
+                .select('*')
+                .eq('user_id', userId); // Ensure this column name matches your database
 
             if (error) {
                 throw error;
@@ -41,8 +48,12 @@ const Results = () => {
     };
 
     useEffect(() => {
-        fetchPatientDetails();
+        fetchUser();
     }, []);
+
+    useEffect(() => {
+        fetchPatientDetails();
+    }, [userId]);
 
     const downloadPDF = async (patient) => {
         const doc = new jsPDF();
@@ -154,48 +165,30 @@ const Results = () => {
             doc.text('Patient Education:', margin, lineHeight * 23);
             doc.setTextColor(0, 0, 0); // Reset color
             doc.setFont('helvetica', 'normal');
-            doc.text(`Information on Glioma: ${patient.educationInfo}`, margin, lineHeight * 24, { maxWidth: 180 });
-            doc.text(`Tips for Managing Symptoms: ${patient.managementTips}`, margin, lineHeight * 25, { maxWidth: 180 });
-            doc.text(`Additional Resources: ${patient.additionalResources}`, margin, lineHeight * 26, { maxWidth: 180 });
+            doc.text(`Information on Managing Symptoms: ${patient.symptomManagement ? patient.symptomManagement : 'Not needed'}`, margin, lineHeight * 24);
+            doc.text(`Resources for Support: ${patient.supportResources ? patient.supportResources : 'Not needed'}`, margin, lineHeight * 25);
         }
 
-        // Replace spaces and commas in patient's full name with underscores for filename
-        const fullNameForFilename = patient.Full_name.replace(/[\s,]/g, '_');
-        const filename = `diagnosis_results_${fullNameForFilename}.pdf`;
-
-        doc.save(filename);
+        doc.save(`patient_report_${patient.Full_name}.pdf`);
     };
 
-
     return (
-        <div className='results-card'>
-        
-
-            <div className="textAttributes">
-                {patients.map((patient, index) => (
-                    <div
-                        key={index}
-                       
-                    >
-                        <h2 className="results-title">Patient Details</h2>
-                        <p><strong>Full Name:</strong> {patient.Full_name}</p>
+        <div className="results-container">
+            <h1 className='results-title'>Patient Results</h1>
+            <div className='results'>
+                {patients.map((patient) => (
+                    <div key={patient.id} className='result-list'>
+                        <p><strong>Name:</strong> {patient.Full_name}</p>
                         <p><strong>Age:</strong> {patient.Age}</p>
                         <p><strong>Gender:</strong> {patient.Gender}</p>
-                        <p><strong>Address:</strong> {patient.Address}</p>
-                        <p><strong>Phone Number:</strong> {patient.Telephone_Number}</p>
-                        <p><strong>Diagnosis Date:</strong> {new Date().toLocaleDateString()}</p>
-                        <p><strong> Tumor: </strong> {patient.diagnosis}</p>
-                      
-
-                        <hr className="my-3" />
-                        <div>
-                            <button
-                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                                onClick={() => downloadPDF(patient)}
-                            >
-                                Get Full Report
-                            </button>
-                        </div>
+                        <p><strong>Diagnosis:</strong> {patient.diagnosis}</p>
+                        <div className='space'>
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                            onClick={() => downloadPDF(patient)}
+                        >
+                            Get Full Report
+                            </button></div>
                     </div>
                 ))}
             </div>

@@ -18,8 +18,9 @@ const Settings = () => {
     const [image, setImage] = useState(null);
     const [fileURL, setFileURL] = useState(""); // Store file URL
     const { user } = useAuth();
-    
+
     const CDNURL = 'https://nfxmgafcnppcpgbjkmyd.supabase.co/storage/v1/object/public/images/';
+
     useEffect(() => {
         fetchPatientDetails();
     }, []);
@@ -28,7 +29,8 @@ const Settings = () => {
         try {
             const { data, error } = await supabase
                 .from('Patients_Reg')
-                .select('*');
+                .select('*')
+                .eq('user_id', user.id);
 
             if (error) {
                 throw error;
@@ -85,16 +87,6 @@ const Settings = () => {
                         const diagnosis = labels[maxProbabilityIndex];
                         setEditedPatient(prevState => ({ ...prevState, diagnosis: diagnosis }));
                         toast.success(`Results have been uploaded, check the results section`, {});
-
-                        console.log('Saving patient details to Supabase', {
-                            Full_name: editedPatient.Full_name,
-                            Age: editedPatient.Age,
-                            Gender: editedPatient.Gender,
-                            Address: editedPatient.Address,
-                            Telephone_Number: editedPatient.Telephone_Number,
-                            diagnosis: diagnosis,
-                            imageUrl: fileURL // Include the image URL
-                        });
 
                         // Save patient details to Supabase
                         await supabase
@@ -364,3 +356,4 @@ const Settings = () => {
 };
 
 export default Settings;
+
