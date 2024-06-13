@@ -1,199 +1,229 @@
 import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
-import jsPDF from 'jspdf';
-import { supabase } from '../../supabase/client'; // Ensure this path is correct
+import axios from 'axios';
+import { useAuth } from '../../context/AuthProvider';
+import { supabase } from '../../supabase/client';
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 import '../../assets/styles/results.css';
 
-const Results = () => {
-    const [patients, setPatients] = useState([]);
-    const [userId, setUserId] = useState(null);
+const Results = ({ onNewRecordAdded }) => {
+    const { user } = useAuth();
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const fetchUser = async () => {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-            console.error('Error fetching user session:', error);
-            return;
-        }
-        if (session) {
-            setUserId(session.user.id);
-        }
-    };
+    useEffect(() => {
+        fetchResults();
+    }, [user]);
 
-    const fetchPatientDetails = async () => {
-        if (!userId) return;
+    const fetchResults = async () => {
+        if (!user) return;
 
         try {
             const { data, error } = await supabase
                 .from('Patients_Reg')
-                .select('*')
-                .eq('user_id', userId); // Ensure this column name matches your database
+                .select('id, Full_name, Age, Gender, Address, Telephone_Number, diagnosis')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
 
             if (error) {
                 throw error;
             }
 
-            console.log('Fetched patient data:', data);
-
-            // Transform data to include formatted diagnosisDate
-            const patientsWithFormattedDate = data.map(patient => ({
-                ...patient,
-                diagnosisDate: new Date(patient.diagnosisDate).toLocaleDateString()
-            }));
-
-            setPatients(patientsWithFormattedDate);
+            setResults(data);
+            setLoading(false);
         } catch (error) {
-            console.error('Error fetching patient details:', error);
+            console.error('Error fetching results:', error.message);
+            setLoading(false);
         }
     };
 
-    useEffect(() => {
-        fetchUser();
-    }, []);
+    const generatePDF = async (patient) => {
+        try {
+            console.log('Generating PDF for:', patient.Full_name, 'Diagnosis:', patient.diagnosis);
 
-    useEffect(() => {
-        fetchPatientDetails();
-    }, [userId]);
+            // Check for 'glioma_tumor' in the diagnosis
+            if (patient.diagnosis.toLowerCase().trim().includes('glioma_tumor')) {
+                const gliomaInfo = await fetchGliomaInfo(patient.id);
+                patient.gliomaInfo = gliomaInfo;
+                console.log('Glioma info fetched:', gliomaInfo);
+            }
 
-    const downloadPDF = async (patient) => {
-        const doc = new jsPDF();
-        const margin = 20;
-        const lineHeight = 10;
-        doc.setDrawColor(0, 0, 255); // Blue color
-        doc.setFontSize(12);
+            const MyDocument = () => (
+                <Document>
+                    <Page style={styles.page}>
+                        <View style={styles.header}>
+                            <Text style={styles.title}>Diagnosis Results</Text>
+                        </View>
+                        <View style={styles.body}>
+                            <View style={styles.result}>
+                                <Text style={styles.name}>{patient.Full_name}'s Diagnosis</Text>
+                                <Text style={styles.info}><Text style={styles.label}>Age:</Text> {patient.Age}</Text>
+                                <Text style={styles.info}><Text style={styles.label}>Gender:</Text> {patient.Gender}</Text>
+                                <Text style={styles.info}><Text style={styles.label}>Address:</Text> {patient.Address}</Text>
+                                <Text style={styles.info}><Text style={styles.label}>Telephone Number:</Text> {patient.Telephone_Number}</Text>
+                                <Text style={styles.info}><Text style={styles.label}>Diagnosis:</Text> {patient.diagnosis}</Text>
+                                <View style={styles.preliminaryDiagnosis}>
+                                    <Text style={styles.preliminaryDiagnosisTitle}>Preliminary Diagnosis:</Text>
+                                    <Text style={styles.info}>
+                                        The preliminary diagnosis suggests that the presence of significant findings consistent with a possible brain tumor, necessitates further consultation with a neurologist or neurosurgeon at a specialized hospital nearby. Sharing these diagnostic insights with the consulting physician will provide valuable guidance for subsequent diagnostic and treatment strategies, such as advanced imaging studies or biopsy procedures. This collaborative approach is crucial to ensure a comprehensive assessment and to develop an individualized management plan aimed at achieving the best possible clinical outcomes for the patient.
+                                    </Text>
+                                </View>
+                                {patient.diagnosis.toLowerCase().trim().includes('glioma_tumor') && patient.gliomaInfo && (
+                                    <View style={styles.gliomaInfo}>
+                                        <Text style={styles.sectionTitle}>Glioma Information:</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Type:</Text> {patient.gliomaInfo.type}</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Stage:</Text> {patient.gliomaInfo.stage}</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Treatment Plan:</Text> {patient.gliomaInfo.treatmentPlan}</Text>
+                                        <Text style={styles.sectionTitle}>Treatment Plan for Glioma Brain Tumor:</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Surgery:</Text> To remove as much of the tumor as possible while preserving neurological function.</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Radiation Therapy:</Text> To kill remaining cancer cells and shrink the tumor.</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Chemotherapy:</Text> To kill or slow the growth of cancer cells.</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Targeted Therapy:</Text> To target specific genes, proteins, or the tissue environment that contributes to cancer growth.</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Immunotherapy:</Text> To boost the body's immune system to fight the cancer.</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Tumor Treating Fields (TTF):</Text> To use electric fields to disrupt the division of cancer cells.</Text>
+                                        <Text style={styles.info}><Text style={styles.label}>Supportive (Palliative) Care:</Text> To manage symptoms and improve quality of life.</Text>
+                                    </View>
+                                )}
+                            </View>
+                        </View>
+                        <View style={styles.footer}>
+                            <Text style={styles.footerText}>Generated by the Glioma Detection System</Text>
+                        </View>
+                    </Page>
+                </Document>
+            );
 
-        // Title
-        doc.setFontSize(16);
-        doc.setTextColor(0, 0, 255); // Blue color
-        doc.setFont('helvetica', 'bold');
-        doc.text('Glioma Diagnosis Report', margin, lineHeight);
-        doc.setLineWidth(0.5);
-        doc.line(margin, lineHeight + 1, margin + 105, lineHeight + 1); // Underline under the title
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0); // Reset color
-
-        // Patient Information
-        doc.setTextColor(0, 0, 255); // Blue color
-        doc.setFont('helvetica', 'bold');
-        doc.text('Patient Details:', margin, lineHeight * 3);
-        doc.setTextColor(0, 0, 0); // Reset color
-
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Full Name: ${patient.Full_name}`, margin, lineHeight * 4);
-        doc.text(`Age: ${patient.Age}`, margin, lineHeight * 5);
-        doc.text(`Gender: ${patient.Gender}`, margin, lineHeight * 6);
-        doc.text(`Address: ${patient.Address}`, margin, lineHeight * 7);
-        doc.text(`Phone Number: ${patient.Telephone_Number}`, margin, lineHeight * 8);
-
-        // Diagnosis Details
-        doc.setTextColor(0, 0, 255); // Blue color
-        doc.setFont('helvetica', 'bold');
-        doc.text('Diagnosis Details:', margin, lineHeight * 10);
-        doc.setTextColor(0, 0, 0); // Reset color
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Diagnosis Date: ${new Date().toLocaleDateString()}`, margin, lineHeight * 11);
-        doc.text(`Tumor: ${patient.diagnosis}`, margin, lineHeight * 12);
-
-        // Treatment Plan
-        if (patient.diagnosis === 'glioma_tumor') {
-            doc.setTextColor(0, 0, 255); // Blue color
-            doc.setFont('helvetica', 'bold');
-            doc.text('Treatment Plan for Glioma Brain Tumor Patient:', margin, lineHeight * 14);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'bold');
-
-            doc.text('Surgery:', margin, lineHeight * 15);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'normal');
-            doc.text('- Type of Surgery: Craniotomy with partial tumor resection.', margin, lineHeight * 16);
-            doc.text('- Complications: Risk of bleeding, infection, and neurological deficits.', margin, lineHeight * 17);
-
-            doc.setFont('helvetica', 'bold');
-            doc.text('Radiation Therapy:', margin, lineHeight * 19);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'normal');
-            doc.text('- Type of Radiation: External beam radiation therapy (EBRT).', margin, lineHeight * 20);
-            doc.text('- Dose and Fractionation: Total dose of 60 Gy in 30 fractions.', margin, lineHeight * 21);
-            doc.text('- Targeted Area: Whole brain.', margin, lineHeight * 22);
-            doc.text('- Side Effects: Fatigue, hair loss, and potential cognitive changes.', margin, lineHeight * 23);
-
-            doc.setFont('helvetica', 'bold');
-            doc.text('Chemotherapy:', margin, lineHeight * 25);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'normal');
-            doc.text('- Chemotherapy Drugs: Temozolomide (Temodar).', margin, lineHeight * 26);
-            doc.text('- Schedule: Daily for 5 days every 28 days.', margin, lineHeight * 27);
-            doc.text('- Side Effects: Nausea, fatigue, and increased risk of infection.', margin, lineHeight * 28);
-            doc.text('- Monitoring: Regular blood tests and imaging scans to monitor treatment response.', margin, lineHeight * 29);
-
-            doc.setFont('helvetica', 'bold');
-            doc.text('Follow-Up and Monitoring:', margin, lineHeight * 31);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'normal');
-            doc.text('- MRI every 3 months to assess tumor response and recurrence.', margin, lineHeight * 32);
-            doc.text('- Neurological assessment at each follow-up visit.', margin, lineHeight * 33);
-            doc.text('- Supportive care for managing symptoms and side effects.', margin, lineHeight * 34);
-
-            doc.setTextColor(0, 0, 255); // Blue color
-            doc.setFont('helvetica', 'bold');
-            doc.text('Patient Education:', margin, lineHeight * 36);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'normal');
-            doc.text('- Provide information on managing symptoms, including pain management and nutritional support.', margin, lineHeight * 37);
-            doc.text('- Resources for psychological support and counseling.', margin, lineHeight * 38);
-
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.text('This treatment plan will be tailored to the patient\'s specific condition and may be adjusted based on treatment response and side effects.', margin, lineHeight * 40);
-        } else {
-            doc.setTextColor(0, 0, 255); // Blue color
-            doc.setFont('helvetica', 'bold');
-            doc.text('Treatment Plan:', margin, lineHeight * 14);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Surgery: ${patient.surgeryDetails ? patient.surgeryDetails : 'Not needed'}`, margin, lineHeight * 15);
-            doc.text(`Radiation Therapy: ${patient.radiationTherapy ? patient.radiationTherapy : 'Not needed'}`, margin, lineHeight * 16);
-            doc.text(`Chemotherapy: ${patient.chemotherapy ? patient.chemotherapy : 'Not needed'}`, margin, lineHeight * 17);
-
-            doc.setFont('helvetica', 'bold');
-            doc.text('Follow-Up and Monitoring:', margin, lineHeight * 19);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Follow-Up Schedule: ${patient.followUpSchedule ? patient.followUpSchedule : 'Not needed'}`, margin, lineHeight * 20);
-            doc.text(`Monitoring Plan: ${patient.monitoringPlan ? patient.monitoringPlan : 'Not needed'}`, margin, lineHeight * 21);
-
-            doc.setFont('helvetica', 'bold');
-            doc.text('Patient Education:', margin, lineHeight * 23);
-            doc.setTextColor(0, 0, 0); // Reset color
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Information on Managing Symptoms: ${patient.symptomManagement ? patient.symptomManagement : 'Not needed'}`, margin, lineHeight * 24);
-            doc.text(`Resources for Support: ${patient.supportResources ? patient.supportResources : 'Not needed'}`, margin, lineHeight * 25);
+            const pdfBlob = await pdf(<MyDocument />).toBlob();
+            downloadReport(pdfBlob);
+        } catch (error) {
+            console.error('Error generating report:', error.message);
         }
+    };
 
-        doc.save(`patient_report_${patient.Full_name}.pdf`);
+    const fetchGliomaInfo = async (patientId) => {
+        try {
+            const response = await axios.get(`https://api.gemini.com/glioma-info`, {
+                params: {
+                    patientId: patientId,
+                },
+                headers: {
+                    'Authorization': `Bearer YOUR_GEMINI_API_KEY`,
+                },
+            });
+
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching glioma information:', error.message);
+            return null;
+        }
+    };
+
+    const downloadReport = (pdfBlob) => {
+        const blobUrl = URL.createObjectURL(pdfBlob);
+        window.open(blobUrl, '_blank');
     };
 
     return (
         <div className="results-container">
-            <h1 className='results-title'>Patient Results</h1>
-            <div className='results'>
-                {patients.map((patient) => (
-                    <div key={patient.id} className='result-list'>
-                        <p><strong>Name:</strong> {patient.Full_name}</p>
-                        <p><strong>Age:</strong> {patient.Age}</p>
-                        <p><strong>Gender:</strong> {patient.Gender}</p>
-                        <p><strong>Diagnosis:</strong> {patient.diagnosis}</p>
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                results.map((result) => (
+                    <div key={result.id} className="result-list">
+                        <h3><strong>Full Name:</strong> {result.Full_name}</h3>
+                        <p><strong>Age:</strong> {result.Age}</p>
+                        <p><strong>Gender:</strong> {result.Gender}</p>
+                        <p><strong>Address:</strong> {result.Address}</p>
+                        <p><strong>Telephone Number:</strong> {result.Telephone_Number}</p>
+                        <p><strong>Diagnosis:</strong> {result.diagnosis}</p>
                         <div className='space'>
-                        <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                            onClick={() => downloadPDF(patient)}
-                        >
-                            Get Full Report
-                            </button></div>
+                            <button
+                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                                onClick={() => generatePDF(result)}
+                            >
+                                Get Full Report
+                            </button>
+                        </div>
                     </div>
-                ))}
-            </div>
+                ))
+            )}
         </div>
     );
 };
+
+// Styles for PDF document
+const styles = StyleSheet.create({
+    page: {
+        padding: 35,
+        fontFamily: 'Helvetica',
+    },
+    header: {
+        borderBottom: '2px solid #000',
+        marginBottom: 20,
+        paddingBottom: 10,
+    },
+    title: {
+        fontSize: 24,
+        textAlign: 'center',
+        color: '#364f7c',
+        fontWeight: 'bold',
+    },
+    body: {
+        paddingTop: 10,
+        paddingBottom: 10,
+    },
+    result: {
+        marginBottom: 20,
+        padding: 10,
+        border: '1px solid #ddd',
+        borderRadius: 8,
+    },
+    name: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        color: '#364f7c',
+    },
+    info: {
+        fontSize: 14,
+        marginBottom: 5,
+    },
+    label: {
+        fontWeight: 'bold',
+    },
+    preliminaryDiagnosis: {
+        marginTop: 10,
+        padding: 10,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 5,
+    },
+    preliminaryDiagnosisTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        color: '#c94d3f',
+    },
+    gliomaInfo: {
+        marginTop: 10,
+        padding: 10,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 5,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        color: '#c94d3f',
+    },
+    footer: {
+        borderTop: '2px solid #000',
+        marginTop: 20,
+        paddingTop: 10,
+        textAlign: 'center',
+    },
+    footerText: {
+        fontSize: 12,
+        color: '#666',
+    },
+});
 
 export default Results;

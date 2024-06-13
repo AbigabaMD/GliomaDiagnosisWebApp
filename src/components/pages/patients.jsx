@@ -33,85 +33,66 @@ const Patients = () => {
     }, [user]);
 
     return (
-        <div>
-            <main>
-                {/* Patients Table */}
-                <div>
-                    <h2 className="patients-title">
-                        List of Patients with Diagnosis
-                    </h2>
-                    <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative">
-                        <table className="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped relative">
-                            <thead>
-                                <tr className="text-left">
-                                    <th className="px-6 py-3 bg-gray-100 text-gray-600 border-b border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 font-semibold text-sm uppercase">
-                                        No.
-                                    </th>
-                                    <th className="px-6 py-3 bg-gray-100 text-gray-600 border-b border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 font-semibold text-sm uppercase">
-                                        Full Name
-                                    </th>
-                                    <th className="px-6 py-3 bg-gray-100 text-gray-600 border-b border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 font-semibold text-sm uppercase">
-                                        Age
-                                    </th>
-                                    <th className="px-6 py-3 bg-gray-100 text-gray-600 border-b border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 font-semibold text-sm uppercase">
-                                        Gender
-                                    </th>
-                                    <th className="px-6 py-3 bg-gray-100 text-gray-600 border-b border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 font-semibold text-sm uppercase">
-                                        Address
-                                    </th>
-                                    <th className="px-6 py-3 bg-gray-100 text-gray-600 border-b border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 font-semibold text-sm uppercase">
-                                        Phone Number
-                                    </th>
-                                    <th className="px-6 py-3 bg-gray-100 text-gray-600 border-b border-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 font-semibold text-sm uppercase">
-                                        Diagnosis Results
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {patients.map((patient, index) => (
-                                    <tr key={patient.id} className="hover:bg-gray-100 focus-within:bg-gray-100 dark:hover:bg-gray-800 dark:focus-within:bg-gray-800">
-                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-600">
-                                            <div className="text-sm text-gray-900 dark:text-black">
-                                                {index + 1}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-600">
-                                            <div className="text-sm font-medium text-gray-900 dark:text-black">
-                                                {patient.Full_name}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-600">
-                                            <div className="text-sm text-gray-900 dark:text-black">
-                                                {patient.Age}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-600">
-                                            <div className="text-sm text-gray-900 dark:text-black">
-                                                {patient.Gender}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-600">
-                                            <div className="text-sm text-gray-900 dark:text-black">
-                                                {patient.Address}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-600">
-                                            <div className="text-sm text-gray-900 dark:text-black">
-                                                {patient.Telephone_Number}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 dark:border-gray-600">
-                                            <div className="text-sm text-gray-900 dark:text-black">
-                                                {patient.diagnosis}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+        <div className="patients-container mx-auto p-8">
+            <h2 className="patients-title text-center text-2xl font-bold text-blue-900 mb-6">
+                List of Patients with Diagnosis
+            </h2>
+            <div className="shadow overflow-hidden rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200 overflow-y-scroll">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                No.
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Full Name
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Age
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Gender
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Address
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Phone Number
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Diagnosis Results
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {patients.slice(0, 6).map((patient, index) => (
+                            <tr key={patient.id} className="hover:bg-gray-50">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {index + 1}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {patient.Full_name}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {patient.Age}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {patient.Gender}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {patient.Address}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {patient.Telephone_Number}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {patient.diagnosis}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 };

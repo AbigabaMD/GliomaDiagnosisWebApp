@@ -175,3 +175,26 @@ body {
     display: flex;
     align-items: center;
 }
+.custom-toast-container {
+    .Toastify__toast {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 0.1px solid #000 !important;
+        box-shadow: none !important;
+        /* Optional: remove box shadow if any */
+    }
+
+    .Toastify__progress-bar {
+        background-color: #000000 !important;
+    }
+}
+.notification-badge {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 50%;
+}
