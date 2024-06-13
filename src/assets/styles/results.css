@@ -1,48 +1,44 @@
-.results{
+.results {
     margin-bottom: 100px;
-    
-
-}
-.result-list{
-    padding-bottom: 100px;
-    height: 38vh;
-        padding: 10px;
-        margin-top: 50px;
-        width: 500px;
-        border-radius: 25px;
-        background-color: #fff;
-        /* Add a background color if needed */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-}
-.textAttributes{
-    color:#000;
-
-}
-.results-card{
-   
-       
-        
 }
 
-.results-title{
+.result-list {
+    padding: 20px;
+    /* Increased padding for better spacing */
+    margin-top: 20px;
+    /* Adjusted margin top */
+    width: 500px;
+    border-radius: 25px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* Align items to the left */
+    justify-content: center;
+}
+
+.result-list h3 {
+    font-weight: bold;
+    color: #364f7c;
+}
+
+.result-list p {
+    margin-bottom: 5px;
+    /* Adjusted margin bottom */
+}
+
+.results-title {
     font-size: 24px;
-        font-weight: bold;
-        color: #364f7c;
-        padding-bottom: 30px;
-       
-      
-       
+    font-weight: bold;
+    color: #364f7c;
+    padding-bottom: 30px;
 }
-.getReport{
-    justify-content: flex-end;
+
+.space {
+    margin-top: 10px;
 }
-.results-container{
+
+.results-container {
     margin-top: 100px;
-}
-.space{
-    margin-top:10px;
 }

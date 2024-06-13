@@ -9,6 +9,8 @@ import * as tf from '@tensorflow/tfjs';
 import { v4 as uuidv4 } from 'uuid';
 import Modal from 'react-modal';
 import { supabase } from "../../supabase/client";
+import { TailSpin } from 'react-loader-spinner';
+
 import '../../assets/styles/modal.css';
 
 const CDNURL = 'https://nfxmgafcnppcpgbjkmyd.supabase.co/storage/v1/object/public/images/';
@@ -28,7 +30,7 @@ const Dashboard = () => {
         phoneNumber: "",
         address: ""
     });
-
+    const [loading, setLoading] = useState(false); // Loader state
     useEffect(() => {
         loadModel();
     }, []);
@@ -137,6 +139,8 @@ const Dashboard = () => {
             return;
         }
 
+        setLoading(true);
+
         const reader = new FileReader();
         reader.onload = async () => {
             const img = new Image();
@@ -151,24 +155,42 @@ const Dashboard = () => {
                 const maxProbabilityIndex = probabilities.indexOf(Math.max(...probabilities));
                 const labels = ["glioma_tumor", "no_tumor", "meningioma_tumor", "pituitary_tumor"];
                 const diagnosis = labels[maxProbabilityIndex];
-                setDiagnosisResults(diagnosis);
+              
 
-                // Call savePatientDetails after setting diagnosisResults
                 await savePatientDetails({
                     fullName: patientDetails.fullName,
                     age: patientDetails.age,
                     gender: patientDetails.gender,
                     address: patientDetails.address,
                     phoneNumber: patientDetails.phoneNumber,
-                    diagnosis: diagnosis,
+                    diagnosis: diagnosis,  // Updated to pass the correct value
                     imageUrl: fileURL
                 });
 
+                // Simulate delay for at least 20 seconds
+                await new Promise(resolve => setTimeout(resolve, 7000));
+
+                setLoading(false);
                 setModalIsOpen(false); // Close modal after diagnosis and saving
+                toast.success('Results have been uploaded successfully!');
+
+                // Reset form fields
+                setPatientDetails({
+                    fullName: "",
+                    age: "",
+                    gender: "",
+                    phoneNumber: "",
+                    address: ""
+                });
+                setFilename("No file Uploaded");
+                setImage(null);
+                setImagePreview(null);
+                setDiagnosisResults("");
             };
         };
         reader.readAsDataURL(image);
     };
+
 
     const savePatientDetails = async ({ fullName, age, gender, address, phoneNumber, diagnosis, imageUrl }) => {
         try {
@@ -196,17 +218,36 @@ const Dashboard = () => {
             }
 
             console.log('Patient details saved:', data);
-            toast.success('Patient details saved successfully!');
         } catch (error) {
             console.error('Error saving patient details:', error);
-            toast.error('Error saving patient details.');
+            toast.error('Fill in patients details.');
         }
     };
 
     return (
         <div>
-            <ToastContainer />
-
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={true}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                className="custom-toast-container"
+                toastStyle={{
+                    background: 'black',
+                    color: '#000000',
+                    border: '1px solid #000000',
+                    boxShadow: 'none',
+                }}
+                progressBarStyle={{
+                    background: 'blue',
+                    height: '5px',
+                }}
+            />
             <form onSubmit={handleSubmit} className='form'>
                 <h1 className="formTitle">Patient's Details</h1>
                 <div className="patient-details-section">
@@ -246,7 +287,6 @@ const Dashboard = () => {
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
-                            <option value="other">Other</option>
                         </select>
                     </label>
                     <label>
@@ -299,12 +339,25 @@ const Dashboard = () => {
                 >
                     <div className="modal-content">
                         {imagePreview && <img src={imagePreview} alt="Image Preview" className="image-preview" />}
-                        <button className="diagnose-button" type="button" onClick={handleDiagnose}>
-                            Diagnose
-                        </button>
-                        <button className="cancel" onClick={() => setModalIsOpen(false)}>
-                            Cancel
-                        </button>
+                        {loading ? (
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                                <TailSpin
+                                    height="30"
+                                    width="30"
+                                    color="#00BFFF"
+                                    ariaLabel="loading"
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                <button className="diagnose-button" type="button" onClick={handleDiagnose}>
+                                    Diagnose
+                                </button>
+                                <button className="cancel" onClick={() => setModalIsOpen(false)}>
+                                    Cancel
+                                </button>
+                            </>
+                        )}
                     </div>
                 </Modal>
             </form>

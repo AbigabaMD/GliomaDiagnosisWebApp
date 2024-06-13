@@ -5,7 +5,7 @@ import axios from "axios";
 import '../../assets/styles/home.css';
 import '../../assets/styles/homePage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt, faUsers, faUserInjured, faPoll, faQuestion, faCog,  } from '@fortawesome/free-solid-svg-icons';
+import { faTachometerAlt, faUsers, faUserInjured, faPoll, faQuestion, faCog, faBell } from '@fortawesome/free-solid-svg-icons'; // Added faBell icon for notification
 import Users from './users';
 import Patients from './patients';
 import Results from './results';
@@ -23,6 +23,7 @@ const Home = () => {
     const [filename, setFilename] = useState("No file Uploaded");
     const [isMenuOpen, setMenuOpen] = useState(true);
     const [selectedMenuItem, setSelectedMenuItem] = useState('dashboard');
+    const [newRecordAdded, setNewRecordAdded] = useState(false); // State for new record notification
 
     useEffect(() => {
         fetch("http://localhost:5000")
@@ -62,6 +63,11 @@ const Home = () => {
 
     const handleMenuClick = (menuItem) => {
         setSelectedMenuItem(menuItem);
+
+        // Reset new record notification when clicking on a menu item
+        if (menuItem === 'results') {
+            setNewRecordAdded(false);
+        }
     };
 
     const handleLogout = async (e) => {
@@ -74,8 +80,14 @@ const Home = () => {
         }
     };
 
+    // Function to simulate adding a new record
+    const addNewRecord = () => {
+        // Add logic to actually add a new record here
+        setNewRecordAdded(true);
+    };
+
     return (
-        <div >
+        <div>
             <header className="dashboard-header">
                 <h1 className="system-title">GLIOMA BTDS</h1>
                 <div className="menu-icon" onClick={toggleMenu}>
@@ -103,6 +115,9 @@ const Home = () => {
                     </li>
                     <li onClick={() => handleMenuClick('results')} className={selectedMenuItem === 'results' ? 'selected' : ''}>
                         <FontAwesomeIcon icon={faPoll} /> Results
+                        {newRecordAdded && (
+                            <span className="notification-badge"></span>
+                        )}
                     </li>
                     <li onClick={() => handleMenuClick('faqs')} className={selectedMenuItem === 'faqs' ? 'selected' : ''}>
                         <FontAwesomeIcon icon={faQuestion} /> FAQs
@@ -113,22 +128,24 @@ const Home = () => {
                     {/* Add more menu items as needed */}
                 </ul>
             </nav>
-        <div className="content">
-            {/* Main Content */}
+            <div className="content">
+                {/* Main Content */}
                 <main className="main-content">
-                {/* Conditionally render the selected menu item or a default message */}
-                {selectedMenuItem === 'dashboard' && <Dashboard />}
-                {selectedMenuItem === 'users' && <Users />}
-                {selectedMenuItem === 'patients' && <Patients />}
-                {selectedMenuItem === 'results' && <Results />}
-                {selectedMenuItem === 'faqs' && <Faqs />}
-                {selectedMenuItem === 'settings' && <Settings />}
-                {selectedMenuItem !== 'dashboard' && !['users', 'patients', 'results', 'faqs', 'settings'].includes(selectedMenuItem) && (
-                    <div className="default-message">Select a menu item to view content</div>
-                )}
-            </main></div>
+                    {/* Conditionally render the selected menu item or a default message */}
+                    {selectedMenuItem === 'dashboard' && <Dashboard />}
+                    {selectedMenuItem === 'users' && <Users />}
+                    {selectedMenuItem === 'patients' && <Patients />}
+                    {selectedMenuItem === 'results' && <Results onNewRecordAdded={addNewRecord} />}
+                    {selectedMenuItem === 'faqs' && <Faqs />}
+                    {selectedMenuItem === 'settings' && <Settings />}
+                    {selectedMenuItem !== 'dashboard' && !['users', 'patients', 'results', 'faqs', 'settings'].includes(selectedMenuItem) && (
+                        <div className="default-message">Select a menu item to view content</div>
+                    )}
+                </main>
+            </div>
         </div>
     );
 }
 
 export default Home;
+
